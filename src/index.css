@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef6f1;
+  color: #1f2937;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.title {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 22px;
+  color: #4b5563;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.cardTitle {
+  font-size: 34px;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.cardSubtitle {
+  font-size: 20px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.field input {
+  width: 100%;
+  padding: 14px;
+  font-size: 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+}
+
+.helpText {
+  font-size: 15px;
+  color: #6b7280;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.section {
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-size: 22px;
+  margin-top: 16px;
+  background: #fafafa;
+}
+
+@media (max-width: 700px) {
+  .inputRow {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .cardTitle {
+    font-size: 28px;
+  }
+}
+
+.section {
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  margin-top: 16px;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+.section summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 18px 20px;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.section summary::-webkit-details-marker {
+  display: none;
+}
+
+.sectionContent {
+  padding: 0 20px 18px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 18px;
+}
+
+.textLabel {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.textArea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+.generateButton {
+  margin-top: 24px;
+  padding: 14px 22px;
+  border: none;
+  border-radius: 12px;
+  background: #16a34a;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.generateButton:hover {
+  background: #15803d;
+}
+
+.resultsCard {
+  margin-top: 24px;
+  border: 1px solid #d1d5db;
+  border-radius: 18px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.resultsTitle {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 28px;
+}
+
+.resultsText {
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+
+.resultsList {
+  margin-top: 16px;
+  padding-left: 24px;
+  font-size: 18px;
+}
