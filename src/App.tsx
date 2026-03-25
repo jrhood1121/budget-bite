@@ -182,7 +182,7 @@ export default function App() {
     setShowMealIdeas(false)
 
     try {
-      const response = await fetch('http://localhost:3001/api/grocery-list', {
+      const response = await fetch('/api/grocery-list', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -225,7 +225,7 @@ export default function App() {
     setError('')
 
     try {
-      const response = await fetch('http://localhost:3001/api/meal-ideas', {
+      const response = await fetch('/api/meal-ideas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
