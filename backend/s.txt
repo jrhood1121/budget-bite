@@ -25,54 +25,23 @@ type GroceryRequest = {
   itemsInFridge?: string
 }
 
-type MealIdeasRequest = {
-  groceryList: string[]
-  dietaryPreferences?: {
-    vegetarian?: boolean
-    vegan?: boolean
-    glutenFree?: boolean
-    dairyFree?: boolean
-  }
-  religiousPreferences?: {
-    halal?: boolean
-    kosher?: boolean
-  }
-  avoidFoods?: string
-}
-
-type GroceryCategory =
-  | 'protein'
-  | 'carb'
-  | 'fruit'
-  | 'vegetable'
-  | 'dairy'
-  | 'other'
-  | 'snacks'
-
 type GroceryItem = {
   name: string
   price: number
   servings: number
-  category: GroceryCategory
+  category:
+    | 'protein'
+    | 'carb'
+    | 'fruit'
+    | 'vegetable'
+    | 'dairy'
+    | 'other'
   tags?: string[]
   allergens?: string[]
 }
 
 type SelectedGroceryItem = GroceryItem & {
   quantity: number
-}
-
-type RecipeCategory = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack'
-
-type Recipe = {
-  title: string
-  category: RecipeCategory
-  description: string
-  time: string
-  servings: string
-  ingredients: string[]
-  tags?: string[]
-  allergens?: string[]
 }
 
 const groceryDatabase: GroceryItem[] = [
@@ -275,7 +244,7 @@ const groceryDatabase: GroceryItem[] = [
     servings: 8,
     category: 'protein',
     tags: ['vegetarian', 'vegan', 'gluten-free', 'halal', 'kosher'],
-    allergens: ['peanut', 'peanuts', 'nuts'],
+    allergens: ['peanut', 'nuts'],
   },
   {
     name: 'Almond Butter',
@@ -432,22 +401,6 @@ const groceryDatabase: GroceryItem[] = [
     tags: ['vegetarian', 'gluten-free', 'halal', 'kosher'],
     allergens: ['milk', 'dairy'],
   },
-  {
-    name: 'Almond Milk',
-    price: 4,
-    servings: 6,
-    category: 'dairy',
-    tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
-    allergens: ['tree nuts', 'nuts', 'almond'],
-  },
-  {
-    name: 'Oat Milk',
-    price: 4,
-    servings: 6,
-    category: 'dairy',
-    tags: ['vegetarian', 'vegan', 'dairy-free', 'halal', 'kosher'],
-    allergens: [],
-  },
 
   {
     name: 'Olive Oil',
@@ -461,7 +414,7 @@ const groceryDatabase: GroceryItem[] = [
     name: 'Hummus',
     price: 5,
     servings: 5,
-    category: 'snacks',
+    category: 'other',
     tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
     allergens: ['sesame'],
   },
@@ -469,110 +422,9 @@ const groceryDatabase: GroceryItem[] = [
     name: 'Salsa',
     price: 4,
     servings: 6,
-    category: 'snacks',
+    category: 'other',
     tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
     allergens: [],
-  },
-  {
-    name: 'Dark Chocolate',
-    price: 4,
-    servings: 4,
-    category: 'snacks',
-    tags: ['vegetarian', 'vegan'],
-    allergens: [],
-  },
-]
-
-const recipes: Recipe[] = [
-  {
-    title: 'Hummus Veggie Wrap',
-    category: 'Lunch',
-    description: 'Whole wheat wrap filled with hummus and fresh vegetables',
-    time: '10 mins',
-    servings: '1 serving',
-    ingredients: ['Tortillas', 'Hummus', 'Carrots', 'Spinach', 'Tomatoes'],
-    tags: ['vegetarian', 'vegan'],
-    allergens: ['wheat', 'gluten', 'sesame'],
-  },
-  {
-    title: 'Tofu Stir-Fry',
-    category: 'Dinner',
-    description: 'Asian-inspired tofu with vegetables',
-    time: '20 mins',
-    servings: '2 servings',
-    ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Onions'],
-    tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
-    allergens: ['soy'],
-  },
-  {
-    title: 'Greek Yogurt Berry Bowl',
-    category: 'Breakfast',
-    description: 'Greek yogurt with oats and berries',
-    time: '5 mins',
-    servings: '1 serving',
-    ingredients: ['Greek Yogurt', 'Frozen Berries', 'Oats'],
-    tags: ['vegetarian', 'gluten-free', 'halal', 'kosher'],
-    allergens: ['milk', 'dairy'],
-  },
-  {
-    title: 'Peanut Butter Banana Toast',
-    category: 'Breakfast',
-    description: 'Toast topped with peanut butter and bananas',
-    time: '5 mins',
-    servings: '1 serving',
-    ingredients: ['Bread', 'Peanut Butter', 'Bananas'],
-    tags: ['vegetarian', 'vegan'],
-    allergens: ['peanut', 'peanuts', 'nuts', 'wheat', 'gluten'],
-  },
-  {
-    title: 'Black Bean Rice Bowl',
-    category: 'Dinner',
-    description: 'Rice bowl with beans and vegetables',
-    time: '15 mins',
-    servings: '2 servings',
-    ingredients: ['Rice', 'Black Beans', 'Tomatoes', 'Onions'],
-    tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
-    allergens: [],
-  },
-  {
-    title: 'Apple Peanut Butter Snack',
-    category: 'Snack',
-    description: 'Apple slices with peanut butter',
-    time: '5 mins',
-    servings: '1 serving',
-    ingredients: ['Apples', 'Peanut Butter'],
-    tags: ['vegetarian', 'vegan', 'gluten-free'],
-    allergens: ['peanut', 'peanuts', 'nuts'],
-  },
-  {
-    title: 'Oatmeal Bowl',
-    category: 'Breakfast',
-    description: 'Warm oats with bananas and berries',
-    time: '10 mins',
-    servings: '1 serving',
-    ingredients: ['Oats', 'Bananas', 'Frozen Berries'],
-    tags: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'halal', 'kosher'],
-    allergens: [],
-  },
-  {
-    title: 'Salmon Rice Plate',
-    category: 'Dinner',
-    description: 'Salmon served with rice and broccoli',
-    time: '25 mins',
-    servings: '2 servings',
-    ingredients: ['Salmon', 'Rice', 'Broccoli'],
-    tags: ['gluten-free', 'dairy-free', 'halal', 'kosher'],
-    allergens: ['fish'],
-  },
-  {
-    title: 'Veggie Pasta',
-    category: 'Lunch',
-    description: 'Pasta tossed with vegetables and olive oil',
-    time: '20 mins',
-    servings: '2 servings',
-    ingredients: ['Pasta', 'Spinach', 'Tomatoes', 'Olive Oil'],
-    tags: ['vegetarian', 'vegan'],
-    allergens: ['wheat', 'gluten'],
   },
 ]
 
@@ -721,13 +573,12 @@ app.post('/api/grocery-list', (req, res) => {
     return selectedItems.find((item) => item.name === name)?.quantity ?? 0
   }
 
-  const categories: GroceryCategory[] = [
+  const categories: GroceryItem['category'][] = [
     'protein',
     'carb',
     'fruit',
     'vegetable',
     'dairy',
-    'snacks',
   ]
 
   for (const category of categories) {
@@ -797,87 +648,6 @@ app.post('/api/grocery-list', (req, res) => {
       totalCost >= budget * 0.75
         ? 'Generated a grocery list that uses most of your budget while keeping variety.'
         : 'Generated the best grocery list possible within your filters and budget.',
-  })
-})
-
-app.post('/api/meal-ideas', (req, res) => {
-  const {
-    groceryList,
-    dietaryPreferences,
-    religiousPreferences,
-    avoidFoods,
-  } = req.body as MealIdeasRequest
-
-  if (!Array.isArray(groceryList)) {
-    return res.status(400).json({
-      error: 'Please provide a groceryList array.',
-    })
-  }
-
-  const groceryNames = groceryList.map((item) => normalizeFoodText(item))
-
-  const avoidList = (avoidFoods || '')
-    .split(',')
-    .map((food) => normalizeFoodText(food))
-    .filter(Boolean)
-
-  const filteredRecipes = recipes.filter((recipe) => {
-    const tags = recipe.tags || []
-    const allergens = (recipe.allergens || []).map(normalizeFoodText)
-
-    if (dietaryPreferences?.vegetarian && !tags.includes('vegetarian')) {
-      return false
-    }
-
-    if (dietaryPreferences?.vegan && !tags.includes('vegan')) {
-      return false
-    }
-
-    if (dietaryPreferences?.glutenFree && !tags.includes('gluten-free')) {
-      return false
-    }
-
-    if (dietaryPreferences?.dairyFree && !tags.includes('dairy-free')) {
-      return false
-    }
-
-    if (religiousPreferences?.halal && !tags.includes('halal')) {
-      return false
-    }
-
-    if (religiousPreferences?.kosher && !tags.includes('kosher')) {
-      return false
-    }
-
-    if (avoidList.some((food) => allergens.includes(food))) {
-      return false
-    }
-
-    return true
-  })
-
-  const matchedRecipes = filteredRecipes
-    .map((recipe) => {
-      const matchedIngredients = recipe.ingredients.filter((ingredient) =>
-        groceryNames.includes(normalizeFoodText(ingredient))
-      )
-
-      const matchPercent = Math.round(
-        (matchedIngredients.length / recipe.ingredients.length) * 100
-      )
-
-      return {
-        ...recipe,
-        matchedIngredients,
-        matchPercent,
-      }
-    })
-    .filter((recipe) => recipe.matchPercent >= 60)
-    .sort((a, b) => b.matchPercent - a.matchPercent)
-
-  return res.json({
-    totalRecipes: matchedRecipes.length,
-    recipes: matchedRecipes,
   })
 })
 

@@ -18,22 +18,6 @@ type GroceryResponse = {
   message: string
 }
 
-type Recipe = {
-  title: string
-  category: string
-  description: string
-  time: string
-  servings: string
-  ingredients: string[]
-  matchedIngredients: string[]
-  matchPercent: number
-}
-
-type MealIdeasResponse = {
-  totalRecipes: number
-  recipes: Recipe[]
-}
-
 export default function App() {
   const [budget, setBudget] = useState(100)
   const [mealsPerWeek, setMealsPerWeek] = useState(21)
@@ -51,20 +35,15 @@ export default function App() {
   const [itemsInFridge, setItemsInFridge] = useState('')
 
   const [results, setResults] = useState<GroceryResponse | null>(null)
-  const [mealIdeas, setMealIdeas] = useState<MealIdeasResponse | null>(null)
-
-  const [showMealIdeas, setShowMealIdeas] = useState(false)
-  const [loadingGroceries, setLoadingGroceries] = useState(false)
-  const [loadingMeals, setLoadingMeals] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const costPerMeal =
     mealsPerWeek > 0 ? (budget / mealsPerWeek).toFixed(2) : '0.00'
 
-  const remainingBudget = useMemo(() => {
-    if (!results) return '0.00'
-    return (results.budget - results.totalEstimatedCost).toFixed(2)
-  }, [results])
+  const remainingBudget = results
+    ? (results.budget - results.totalEstimatedCost).toFixed(2)
+    : '0.00'
 
   const selectedPreferenceLabel = useMemo(() => {
     const labels: string[] = []
@@ -90,7 +69,6 @@ export default function App() {
       vegetable: 'Vegetables',
       dairy: 'Dairy',
       other: 'Other',
-      snacks: 'Snacks',
     }
 
     return results.groceryList.reduce<Record<string, GroceryItem[]>>(
@@ -104,27 +82,13 @@ export default function App() {
     )
   }, [results])
 
-  const groupedRecipes = useMemo(() => {
-    if (!mealIdeas) return {}
-
-    return mealIdeas.recipes.reduce<Record<string, Recipe[]>>((acc, recipe) => {
-      if (!acc[recipe.category]) acc[recipe.category] = []
-      acc[recipe.category].push(recipe)
-      return acc
-    }, {})
-  }, [mealIdeas])
-
   function getQuantityLabel(item: GroceryItem) {
     if (item.name === 'Eggs') {
       return `${item.quantity} carton${item.quantity > 1 ? 's' : ''}`
     }
 
-    if (
-      item.name === 'Milk' ||
-      item.name === 'Almond Milk' ||
-      item.name === 'Oat Milk'
-    ) {
-      return `${item.quantity} bottle${item.quantity > 1 ? 's' : ''}`
+    if (item.name === 'Milk') {
+      return `${item.quantity} gallon${item.quantity > 1 ? 's' : ''}`
     }
 
     if (
@@ -139,21 +103,22 @@ export default function App() {
     if (
       item.name === 'Greek Yogurt' ||
       item.name === 'Yogurt' ||
-      item.name === 'Cottage Cheese' ||
-      item.name === 'Hummus'
+      item.name === 'Cottage Cheese'
     ) {
       return `${item.quantity} tub${item.quantity > 1 ? 's' : ''}`
     }
 
-    if (item.name === 'Dark Chocolate') {
-      return `${item.quantity} bar${item.quantity > 1 ? 's' : ''}`
-    }
-
-    if (item.name === 'Bread' || item.name === 'Whole Grain Bread') {
+    if (
+      item.name === 'Bread' ||
+      item.name === 'Whole Grain Bread'
+    ) {
       return `${item.quantity} loaf${item.quantity > 1 ? 'ves' : ''}`
     }
 
-    if (item.name === 'Tofu' || item.name === 'Tempeh') {
+    if (
+      item.name === 'Tofu' ||
+      item.name === 'Tempeh'
+    ) {
       return `${item.quantity} block${item.quantity > 1 ? 's' : ''}`
     }
 
@@ -174,17 +139,17 @@ export default function App() {
     return (item.quantity * item.price).toFixed(2)
   }
 
-  async function handleGenerateGroceries() {
-    setLoadingGroceries(true)
+  async function handleGenerateList() {
+    setLoading(true)
     setError('')
     setResults(null)
-    setMealIdeas(null)
-    setShowMealIdeas(false)
 
     try {
       const response = await fetch('http://localhost:3001/api/grocery-list', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           budget,
           mealsPerWeek,
@@ -211,51 +176,10 @@ export default function App() {
       const data: GroceryResponse = await response.json()
       setResults(data)
     } catch (err) {
-      setError('Could not generate grocery list.')
+      setError('Something went wrong while getting your grocery list.')
       console.error(err)
     } finally {
-      setLoadingGroceries(false)
-    }
-  }
-
-  async function handleGetMealIdeas() {
-    if (!results) return
-
-    setLoadingMeals(true)
-    setError('')
-
-    try {
-      const response = await fetch('http://localhost:3001/api/meal-ideas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        groceryList: results.groceryList.map((item) => item.name),
-        dietaryPreferences: {
-          vegetarian,
-          vegan,
-          glutenFree,
-          dairyFree,
-        },
-      religiousPreferences: {
-        halal,
-        kosher,
-      },
-      avoidFoods,
-    }),
-  })
-
-      if (!response.ok) {
-        throw new Error('Failed to get meal ideas')
-      }
-
-      const data: MealIdeasResponse = await response.json()
-      setMealIdeas(data)
-      setShowMealIdeas(true)
-    } catch (err) {
-      setError('Could not get meal ideas.')
-      console.error(err)
-    } finally {
-      setLoadingMeals(false)
+      setLoading(false)
     }
   }
 
@@ -276,88 +200,8 @@ export default function App() {
     setItemsInFridge('')
 
     setResults(null)
-    setMealIdeas(null)
-    setShowMealIdeas(false)
     setError('')
-    setLoadingGroceries(false)
-    setLoadingMeals(false)
-  }
-
-  if (showMealIdeas && mealIdeas) {
-    return (
-      <div className="page">
-        <div className="container">
-          <header className="hero">
-            <div className="brandRow">
-              <span className="brandIcon">🧺</span>
-              <h1 className="title">Budget Bite</h1>
-            </div>
-            <p className="subtitle">
-              Plan your weekly groceries based on your budget and dietary needs
-            </p>
-          </header>
-
-          <div className="mealIdeasHeader">
-            <div>
-              <h2 className="mealIdeasTitle">🍳 Meal Ideas for Your Groceries</h2>
-              <p className="mealIdeasSubtitle">
-                We found {mealIdeas.totalRecipes} meals you can make with your groceries
-              </p>
-            </div>
-
-            <button
-              className="backButton"
-              type="button"
-              onClick={() => setShowMealIdeas(false)}
-            >
-              ← Back to List
-            </button>
-          </div>
-
-          {Object.entries(groupedRecipes).map(([category, recipes]) => (
-            <section key={category} className="recipeSection">
-              <h3 className="recipeCategory">{category}</h3>
-
-              <div className="recipeList">
-                {recipes.map((recipe) => (
-                  <div key={recipe.title} className="recipeCard">
-                    <div className="recipeTopRow">
-                      <div>
-                        <h4 className="recipeTitle">{recipe.title}</h4>
-                        <p className="recipeDescription">{recipe.description}</p>
-                      </div>
-
-                      <div className="matchBadge">{recipe.matchPercent}% match</div>
-                    </div>
-
-                    <div className="recipeMeta">
-                      <span>🕒 {recipe.time}</span>
-                      <span>👥 {recipe.servings}</span>
-                    </div>
-
-                    <div>
-                      <div className="recipeIngredientsTitle">Ingredients:</div>
-                      <ul className="recipeIngredientsList">
-                        {recipe.ingredients.map((ingredient) => {
-                          const matched = recipe.matchedIngredients.includes(ingredient)
-
-                          return (
-                            <li key={ingredient} className="recipeIngredient">
-                              <span>{matched ? '✅' : '○'}</span>
-                              <span>{ingredient}</span>
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </div>
-    )
+    setLoading(false)
   }
 
   return (
@@ -368,6 +212,7 @@ export default function App() {
             <span className="brandIcon">🧺</span>
             <h1 className="title">Budget Bite</h1>
           </div>
+
           <p className="subtitle">
             Plan your weekly groceries based on your budget and dietary needs
           </p>
@@ -392,9 +237,9 @@ export default function App() {
               </div>
 
               <div className="field">
-                <label htmlFor="mealsPerWeek">Meals per Week *</label>
+                <label htmlFor="meals">Meals per Week *</label>
                 <input
-                  id="mealsPerWeek"
+                  id="meals"
                   type="number"
                   value={mealsPerWeek}
                   onChange={(e) => setMealsPerWeek(Number(e.target.value))}
@@ -420,7 +265,6 @@ export default function App() {
                 />
                 Vegetarian
               </label>
-
               <label className="checkboxRow">
                 <input
                   type="checkbox"
@@ -429,7 +273,6 @@ export default function App() {
                 />
                 Vegan
               </label>
-
               <label className="checkboxRow">
                 <input
                   type="checkbox"
@@ -438,7 +281,6 @@ export default function App() {
                 />
                 Gluten-Free
               </label>
-
               <label className="checkboxRow">
                 <input
                   type="checkbox"
@@ -464,7 +306,6 @@ export default function App() {
                 />
                 Halal
               </label>
-
               <label className="checkboxRow">
                 <input
                   type="checkbox"
@@ -484,7 +325,7 @@ export default function App() {
             <div className="sectionContent">
               <textarea
                 className="sectionTextarea"
-                placeholder="Example: peanuts, dairy, fish"
+                placeholder="Example: peanuts, shellfish, mushrooms"
                 value={avoidFoods}
                 onChange={(e) => setAvoidFoods(e.target.value)}
               />
@@ -522,31 +363,19 @@ export default function App() {
           </details>
 
           <div className="buttonRow">
-            <button
-              className="generateButton"
-              type="button"
-              onClick={handleGenerateGroceries}
-            >
-              {loadingGroceries ? 'Generating...' : 'Generate Grocery List'}
+            <button className="generateButton" onClick={handleGenerateList}>
+              Generate Grocery List
             </button>
 
-            <button className="resetButton" type="button" onClick={handleReset}>
-              Create New List
-            </button>
-
-            <button
-              className="mealIdeasButton"
-              type="button"
-              onClick={handleGetMealIdeas}
-              disabled={!results || loadingMeals}
-            >
-              {loadingMeals ? 'Loading...' : '🍳 Get Meal Ideas'}
+            <button className="resetButton" onClick={handleReset} type="button">
+              Reset
             </button>
           </div>
 
           <p className="costText">Estimated budget per meal: ${costPerMeal}</p>
 
-          {error && <p className="errorText">{error}</p>}
+          {loading && <p className="resultsText">Loading...</p>}
+          {error && <p className="resultsText errorText">{error}</p>}
 
           {results && (
             <div className="resultsPanel">
@@ -572,7 +401,44 @@ export default function App() {
 
                 <div className="summaryCard">
                   <div className="summaryLabel">Remaining</div>
-                  <div className="summaryValue summaryGreen">${remainingBudget}</div>
+                  <div className="summaryValue summaryGreen">
+                    ${remainingBudget}
+                  </div>
+                </div>
+              </div>
+
+              <div className="goalsSection">
+                <h4 className="goalsTitle">Your Nutritional Goals</h4>
+
+                <div className="goalsGrid">
+                  <div className="goalCard">
+                    <div className="goalLabel">🍽 Meals</div>
+                    <div className="goalValue">{results.mealsPerWeek}/wk</div>
+                  </div>
+
+                  <div className="goalCard">
+                    <div className="goalLabel">Calories</div>
+                    <div className="goalValue">2000/day</div>
+                  </div>
+
+                  <div className="goalCard">
+                    <div className="goalLabel">Protein</div>
+                    <div className="goalValue">
+                      {nutritionGoal.toLowerCase().includes('high protein')
+                        ? '90g'
+                        : '50g'}
+                    </div>
+                  </div>
+
+                  <div className="goalCard">
+                    <div className="goalLabel">Carbs</div>
+                    <div className="goalValue">250g</div>
+                  </div>
+
+                  <div className="goalCard">
+                    <div className="goalLabel">Fat</div>
+                    <div className="goalValue">65g</div>
+                  </div>
                 </div>
               </div>
 
