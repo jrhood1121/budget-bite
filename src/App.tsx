@@ -595,9 +595,6 @@ export default function App() {
 
                         <div className="itemRight">
                           <div className="itemPrice">${getLineTotal(item)}</div>
-                          <button className="swapButton" type="button">
-                            ↻ Swap
-                          </button>
                         </div>
                       </div>
                     ))}
